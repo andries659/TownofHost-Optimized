@@ -148,6 +148,7 @@ public static class Options
         "CamouflageMode.Karpe",
         "CamouflageMode.Lime",
         "CamouflageMode.Gurge44",
+		"CamouflageMode.Andries",
     ];
     [Obfuscation(Exclude = true)]
     public enum QuickChatSpamMode
@@ -739,7 +740,14 @@ public static class Options
     }
     public static float GetRoleChance(CustomRoles role)
     {
-        return CustomRoleSpawnChances.TryGetValue(role, out var option) ? option.GetValue()/* / 10f */ : roleSpawnChances[role];
+        if (CustomRoleSpawnChances.TryGetValue(role, out var option))
+        {
+            return option is StringOptionItem stringOption
+                ? stringOption.GetChance()
+                : option.GetValue();
+        }
+
+        return roleSpawnChances[role];
     }
     private static System.Collections.IEnumerator CoLoadOptions()
     {
@@ -878,7 +886,7 @@ public static class Options
 
         #region Impostors Settings
         // Impostor
-        TextOptionItem.Create(10000000, "RoleType.VanillaRoles", TabGroup.ImpostorRoles) // Vanilla
+        TextOptionItem.Create(10000000, "RoleType.ImpostorVanilla", TabGroup.ImpostorRoles) // Vanilla
             .SetGameMode(CustomGameMode.Standard)
             .SetHeader(true)
             .SetColor(new Color32(250, 218, 105, byte.MaxValue));
@@ -954,7 +962,7 @@ public static class Options
         /*
          * VANILLA ROLES
          */
-        TextOptionItem.Create(10000006, "RoleType.VanillaRoles", TabGroup.CrewmateRoles)
+        TextOptionItem.Create(10000006, "RoleType.CrewmateVanilla", TabGroup.CrewmateRoles)
             .SetGameMode(CustomGameMode.Standard)
             .SetColor(new Color32(250, 218, 105, byte.MaxValue));
 
@@ -1198,6 +1206,9 @@ public static class Options
         yield return null;
 
         #region System Settings
+		TextOptionItem.Create(10000157, "MenuTitle.SystemSettings", TabGroup.SystemSettings)
+            .SetGameMode(CustomGameMode.Standard)
+            .SetColor(new Color32(255, 238, 232, byte.MaxValue));
         BypassRateLimitAC = BooleanOptionItem.Create(60049, "BypassRateLimitAC", true, TabGroup.SystemSettings, false)
             .SetHeader(true);
         
